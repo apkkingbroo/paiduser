@@ -1,268 +1,151 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Wingo Live Panel — Digit & Big/Small Mode</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{font-family:"Outfit",system-ui,arial;background:#0d0f1a;color:#fff;overflow:hidden}iframe.bg{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:0}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VIP • TEACHER</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:"Outfit",system-ui,arial;background:#0d0f1a;color:#fff;overflow:hidden;}
+iframe.bg{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:0}
 
-.float{position:fixed; bottom:14px; right:14px; z-index:1200;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#00ffa3,#2ee6ff);box-shadow:0 8px 24px rgba(0,0,0,.45); cursor:pointer; user-select:none; touch-action:none}
-.float i{color:#000;font-size:14px;font-weight:900}
+/* Floating button */
+.float{position:fixed;bottom:12px;right:12px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#00ffa3,#2ee6ff);box-shadow:0 10px 20px rgba(0,0,0,.45);cursor:pointer;user-select:none;touch-action:none;z-index:1200}
+.float i{color:#000;font-size:15px}
 
-.overlay{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1100;padding-bottom:30px}
-.panel{width:94%; max-width:360px; border-radius:14px;background:#1b1e2d; box-shadow:0 18px 48px rgba(0,0,0,.6); overflow:hidden}
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-weight:600;font-size:13px}
+/* Overlay panel */
+.overlay{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:1100;padding-bottom:24px}
+.panel{width:94%;max-width:360px;border-radius:12px;background:#1b1e2d;overflow:hidden;border:1px solid rgba(255,255,255,.03)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;font-weight:700;font-size:13px}
 .panel-body{padding:12px;display:flex;flex-direction:column;gap:10px}
 
-.info-strip{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-radius:10px;background:#141722;font-size:12px}
-.info-strip .next{font-weight:700}
+/* Info strip */
+.info-strip{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:8px;background:#141722;font-size:12px;color:#cbd5e1}
+.info-strip .next{font-weight:800}
 
-.result-box{display:none;text-align:center;padding:10px;border-radius:10px;background:#0c0f12;font-weight:700;font-size:16px;min-height:48px;display:flex;align-items:center;justify-content:center}
-@keyframes fadePulse{0%{opacity:.2;transform:scale(.96)}50%{opacity:1;transform:scale(1.02)}100%{opacity:.2;transform:scale(.96)}}
-.result-box.digit{animation:fadePulse 1.6s infinite;font-size:36px;letter-spacing:6px}
-.result-box.predicting{font-size:16px;animation:fadePulse 1s infinite}
+/* Result box */
+.result-box{display:flex;align-items:center;justify-content:center;min-height:58px;border-radius:10px;padding:8px 10px;font-weight:900;background:#0c0f12;color:#fff;transition:all .32s ease}
+.result-box.digit{font-size:36px;letter-spacing:6px}
+.result-box.bigsmall{font-size:18px;letter-spacing:3px;padding:10px 12px}
 
-.server-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:10px;background:#0f1420;font-size:12px}
-.server-state{font-weight:600}
+/* Animations */
+@keyframes pulseGlow{0%{transform:scale(.99);opacity:.85}50%{transform:scale(1.02);opacity:1}100%{transform:scale(.99);opacity:.92}}
+.anim-pulse{animation:pulseGlow 1.2s infinite}
+@keyframes cooldownGlow{0%{box-shadow:0 0 0 rgba(255,255,255,0);transform:scale(1)}50%{box-shadow:0 0 36px rgba(255,120,90,.10);transform:scale(1.02)}100%{box-shadow:0 0 0 rgba(255,255,255,0);transform:scale(1)}}
+.anim-cooldown{animation:cooldownGlow 0.9s infinite}
+
+/* Fade */
+.fade-out{opacity:0;transform:translateY(-6px);transition:all .30s ease}
+.fade-in{opacity:1;transform:translateY(0);transition:all .30s ease}
+
+/* Server row */
+.server-row{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;background:#0f1420;font-size:13px}
+.server-state{font-weight:800}
 .server-state.on{color:#00ffa3}
-.server-state.off{color:#ff4d4f}
+.server-state.off{color:#ff6b6b}
 
-.toggle{position:relative;width:42px;height:22px;border-radius:20px;background:#232734;padding:3px;cursor:pointer}
+/* Toggle */
+.toggle{position:relative;width:44px;height:22px;border-radius:999px;background:#232734;padding:3px;cursor:pointer}
 .toggle .knob{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .22s}
 .toggle.on{background:linear-gradient(90deg,#00ffa3,#2ee6ff)}
 .toggle.on .knob{transform:translateX(20px)}
 
-.live-row{display:flex;gap:8px}
-.slot{flex:1;padding:6px;border-radius:8px;background:#0f1420;font-size:12px}
-.slot .tit{font-size:10px;color:#9ca3af}
-.slot .txt{margin-top:4px;font-weight:600}
+/* Switch button */
+.button-row{display:flex;gap:8px}
+.btn{flex:1;height:36px;border-radius:16px;border:0;font-size:13px;font-weight:800;cursor:pointer;transition:transform .12s}
+.btn:active{transform:translateY(1px)}
+.switch-btn{background:linear-gradient(90deg,#ffd36b,#ff7b7b);color:#111}
 
-.button-row{display:flex;gap:8px;flex-wrap:wrap}
-.buy-btn,.enter-btn,.mode-switch-btn{flex:1;min-width:100px;height:34px;border-radius:18px;border:0;font-size:13px;font-weight:500;cursor:pointer}
-.buy-btn{background:linear-gradient(90deg,#00ffa3,#2ee6ff);color:#000}
-.enter-btn{background:linear-gradient(90deg,#7c4dff,#b388ff);color:#fff}
-.mode-switch-btn{background:linear-gradient(90deg,#ff9a9e,#fad0c4);color:#000}
+/* Countdown overlay */
+.countdown-full{position:fixed;left:50%;bottom:52%;transform:translate(-50%,50%);display:none;z-index:1400}
+.countdown-full .num{font-size:64px;font-weight:900;color:#fff;text-shadow:0 6px 36px rgba(0,0,0,.6)}
 
-.mode-btn{background:none;border:0;color:inherit;cursor:pointer;padding:6px;font-size:14px}
-
-.live-pill{display:flex;align-items:center;gap:6px;padding:2px 6px;border-radius:12px;background:#fff;color:#000;font-size:11px;font-weight:700}
-.live-pill .dot{width:8px;height:8px;border-radius:50%;background:#000;animation:dotFade 1.2s infinite}
-@keyframes dotFade{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
-
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1300}
-.modal{width:92%;max-width:320px;background:#fff;color:#111;border-radius:12px;padding:14px;position:relative}
-.modal h1{margin:0 0 8px;font-size:16px}
-.key-input{width:100%;padding:8px;border-radius:8px;border:2px solid #0b0b0b}
-.verify-btn{margin-top:8px;width:100%;padding:8px;border-radius:8px;border:0;background:linear-gradient(90deg,#00e6ff,#00ffa3);font-weight:600}
-.success-msg{display:none;margin-top:8px;padding:6px;border-radius:6px;background:#e6fff3;color:#0b6b45;text-align:center;font-weight:600}
-
-.redirect-popup{width:90%;max-width:360px;background:#0b1220;color:#fff;padding:14px;border-radius:12px;text-align:center}
-.redirect-popup h3{margin:0 0 8px;font-size:16px}
-.redirect-popup p{margin:0 0 12px;font-size:14px;color:#dbe9ff}
-.redirect-actions{display:flex;gap:10px;justify-content:center}
-.redirect-actions .btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
-.btn-continue{background:linear-gradient(90deg,#00ffa3,#2ee6ff);color:#000}
-.btn-cancel{background:transparent;border:1px solid rgba(255,255,255,.14);color:#fff}
-
-.countdown-full{position:fixed;left:50%;bottom:50%;transform:translate(-50%,50%);display:none;z-index:1400}
-.countdown-full .num{font-size:64px;font-weight:900;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.5)}
-
-.toast{position:fixed;left:50%;bottom:12%;transform:translateX(-50%);padding:6px 12px;border-radius:6px;font-size:12px;opacity:0;transition:.25s;z-index:1500;background:#0f1420;color:#fff}
+/* Toast */
+.toast{position:fixed;left:50%;bottom:10%;transform:translateX(-50%);padding:8px 12px;border-radius:8px;font-size:13px;opacity:0;transition:.20s;z-index:1500;background:#0f1420;color:#fff}
 .toast.show{opacity:1}
-
-  </style>
+</style>
 </head>
 <body>
-  <iframe class="bg" src="https://bdgwina.top//#/register?invitationCode=372171400520"></iframe>
-  <div class="float" id="floatBtn" title="Open panel"><i class="fa-solid fa-play"></i></div>
-  <div class="overlay" id="overlay">
-    <div class="panel" id="panelEl">
-      <div class="panel-head">
-        <div id="panelTitle">Bdgwin free • APKMODDERKINGS</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="live-pill"><div class="dot"></div><div>LIVE</div></div>
-          <button class="mode-btn" id="modeBtn" title="Cycle theme"><i class="fa-solid fa-adjust"></i></button>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="info-strip"><div>Period: <span id="periodNumber">—</span></div><div class="next">Next in <span id="timerText">00:00</span></div></div>
-        <div class="result-box predicting" id="resultText">PREDICTING...</div>
-        <div class="server-row"><div class="server-state off" id="serverStateText">Disconnected</div><div class="toggle" id="toggleWrap"><div class="knob"></div></div></div>
-        <div class="live-row"><div class="slot"><div class="tit">Latest Winner</div><div class="txt" id="winnerText">User 0000000 Win ₹0</div></div><div class="slot"><div class="tit">Online</div><div class="txt" id="onlineUsers">0</div></div></div>
-        <div class="button-row">
-          <button class="buy-btn" id="buyBtn">Buy Paid Hack</button>
-          <button class="enter-btn" id="enterKeyBtn">Enter Key</button>
-          <button class="mode-switch-btn" id="modeSwitchBtn">Switch Big/Small</button>
-        </div>
+<iframe class="bg" src="https://win-99.cfd/#/register?invitationCode=629124075780"></iframe>
+
+<div class="float" id="floatBtn" title="Open panel"><i class="fa-solid fa-play"></i></div>
+
+<div class="overlay" id="overlay">
+  <div class="panel" id="panelEl">
+    <div class="panel-head">
+      <div id="panelTitle">VIP • TEACHER</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="mode-btn" id="modeBtn" title="Theme"><i class="fa-solid fa-adjust"></i></button>
       </div>
     </div>
-  </div>  <div class="modal-backdrop" id="modalBackdrop"><div class="modal" id="modalKey"><button id="modalClose" style="position:absolute;right:8px;top:6px;border:0;background:none;cursor:pointer">✕</button><h1>Activate Premium</h1><p style="font-size:13px;color:#444">Message on telegram: <strong>@Zebdex</strong></p><input class="key-input" id="keyInput" placeholder="Enter Key"><button class="verify-btn" id="verifyKeyBtn">Verify Key</button><div class="success-msg" id="successMsg" style="display:none"></div></div></div>
-  <div class="modal-backdrop" id="redirectBackdrop" style="display:none;z-index:1600;"><div class="redirect-popup" id="redirectPopup"><h3>You're redirecting</h3><p>You're redirecting to premium vip users panel</p><div class="redirect-actions"><button class="btn btn-continue" id="continueRedirect">Continue</button><button class="btn btn-cancel" id="cancelRedirect">Cancel</button></div></div></div>
-  <div class="countdown-full" id="countdownFull"><div class="num" id="countdownNum">5</div></div>
-  <div class="toast" id="toast"></div><script>
-/* ---------- theme / UI ---------- */
-const themes = [
-  { name:"Dark", bodyBg:"#0d0f1a", panelBg:"#1b1e2d", buyGrad:["#00ffa3","#2ee6ff"], enterGrad:["#7c4dff","#b388ff"], toastBg:"#0f1420", textColor:"#fff", panelText:"#fff" },
-  { name:"Light", bodyBg:"#f5f5f5", panelBg:"#ffffff", buyGrad:["#00c6ff","#0072ff"], enterGrad:["#ff758c","#ff7eb3"], toastBg:"#333", textColor:"#111", panelText:"#111" }
-];
-let themeIndex = 0;
-function applyTheme(i){
-  const th = themes[i];
-  document.body.style.background = th.bodyBg;
-  document.body.style.color = th.textColor;
-  document.getElementById('panelEl').style.background = th.panelBg;
-  document.getElementById('panelTitle').style.color = th.panelText;
-  document.querySelectorAll('.buy-btn').forEach(b=> b.style.background = `linear-gradient(90deg, ${th.buyGrad[0]}, ${th.buyGrad[1]})`);
-  document.querySelectorAll('.enter-btn').forEach(b=> b.style.background = `linear-gradient(90deg, ${th.enterGrad[0]}, ${th.enterGrad[1]})`);
-  document.getElementById('toast').style.background = th.toastBg;
-}
-applyTheme(themeIndex);
+    <div class="panel-body">
+      <div class="info-strip">
+        <div>Period: <span id="periodNumber">—</span></div>
+        <div class="next">Next in <span id="timerText">00:00</span></div>
+      </div>
+      <div id="resultText" class="result-box digit">—</div>
+      <div class="server-row">
+        <div class="server-state off" id="serverStateText">Disconnected</div>
+        <div class="toggle" id="toggleWrap"><div class="knob"></div></div>
+      </div>
+      <div class="button-row">
+        <button class="btn switch-btn" id="modeSwitchBtn">Switch to Big/Small</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-/* ---------- refs ---------- */
-const floatBtn = document.getElementById('floatBtn');
-const overlay = document.getElementById('overlay');
-const resultText = document.getElementById('resultText');
-const periodNumberEl = document.getElementById('periodNumber');
-const timerText = document.getElementById('timerText');
-const winnerText = document.getElementById('winnerText');
-const onlineUsers = document.getElementById('onlineUsers');
-const buyBtn = document.getElementById('buyBtn');
-const enterKeyBtn = document.getElementById('enterKeyBtn');
-const modalBackdrop = document.getElementById('modalBackdrop');
-const modalClose = document.getElementById('modalClose');
-const verifyKeyBtn = document.getElementById('verifyKeyBtn');
-const keyInput = document.getElementById('keyInput');
-const successMsg = document.getElementById('successMsg');
-const countdownFull = document.getElementById('countdownFull');
-const countdownNum = document.getElementById('countdownNum');
-const toastEl = document.getElementById('toast');
-const modeBtn = document.getElementById('modeBtn');
-const toggleWrap = document.getElementById('toggleWrap');
-const serverStateText = document.getElementById('serverStateText');
-const redirectBackdrop = document.getElementById('redirectBackdrop');
-const continueRedirect = document.getElementById('continueRedirect');
-const cancelRedirect = document.getElementById('cancelRedirect');
-const modeSwitchBtn = document.getElementById('modeSwitchBtn');
+<div class="countdown-full" id="countdownFull"><div class="num" id="countdownNum">5</div></div>
+<div class="toast" id="toast"></div>
 
-/* ---------- state ---------- */
-let serverOn = false;
-let gameMode = 'digit'; // 'digit' or 'bigsmall'
-let currentValue = null; // displayed during cooldown
-let lastValue = null; // previous round value
-let prevSecond = null;
+<script>
+const PREDICT_SECONDS=5;
+let serverOn=false,gameMode='digit',currentValue=null,nextValue=null,cooldown=false,roundTimeout=null,uiTimer=null;
 
-/* ---------- helpers ---------- */
-function toastMsg(t){ toastEl.textContent = t; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'),1500); }
+/* ELEMENTS */
+const floatBtn=document.getElementById('floatBtn');
+const overlay=document.getElementById('overlay');
+const panelEl=document.getElementById('panelEl');
+const resultText=document.getElementById('resultText');
+const periodNumberEl=document.getElementById('periodNumber');
+const timerText=document.getElementById('timerText');
+const countdownFull=document.getElementById('countdownFull');
+const countdownNum=document.getElementById('countdownNum');
+const toggleWrap=document.getElementById('toggleWrap');
+const serverStateText=document.getElementById('serverStateText');
+const modeSwitchBtn=document.getElementById('modeSwitchBtn');
+const toastEl=document.getElementById('toast');
 
-/* draggable float */
-let dragging=false, ox=0, oy=0;
-floatBtn.addEventListener('pointerdown', e=>{ dragging=true; const r=floatBtn.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top; try{floatBtn.setPointerCapture(e.pointerId);}catch(e){} });
-window.addEventListener('pointermove', e=>{ if(!dragging) return; let x=e.clientX-ox, y=e.clientY-oy; x=Math.max(6, Math.min(window.innerWidth-floatBtn.offsetWidth-6, x)); y=Math.max(6, Math.min(window.innerHeight-floatBtn.offsetHeight-6, y)); floatBtn.style.left=x+'px'; floatBtn.style.top=y+'px'; floatBtn.style.right='auto'; floatBtn.style.bottom='auto'; });
-window.addEventListener('pointerup', e=>{ try{ floatBtn.releasePointerCapture(e.pointerId); }catch(e){} dragging=false; });
-floatBtn.addEventListener('click', ()=>{ if(!dragging) overlay.style.display='flex'; });
-overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.style.display='none'; });
+function toast(msg){toastEl.textContent=msg;toastEl.classList.add('show');setTimeout(()=>toastEl.classList.remove('show'),1400);}
+function pickValue(){return gameMode==='digit'?String(Math.floor(Math.random()*10)):(Math.random()<0.5?'BIG':'SMALL');}
+function showValue(){resultText.textContent=currentValue;}
 
-/* theme cycle */
-modeBtn.addEventListener('click', ()=>{ themeIndex=(themeIndex+1)%themes.length; applyTheme(themeIndex); toastMsg('Theme: '+themes[themeIndex].name); });
+/* Floating drag */
+let isPointerDown=false,startX=0,startY=0,startLeft=0,startTop=0,moved=false;
+floatBtn.addEventListener('pointerdown',e=>{isPointerDown=true;moved=false;floatBtn.setPointerCapture?.(e.pointerId);const r=floatBtn.getBoundingClientRect();if(!floatBtn.style.left) floatBtn.style.left=r.left+'px';if(!floatBtn.style.top) floatBtn.style.top=r.top+'px';startX=e.clientX;startY=e.clientY;startLeft=parseFloat(floatBtn.style.left);startTop=parseFloat(floatBtn.style.top);});
+window.addEventListener('pointermove',e=>{if(!isPointerDown)return;const dx=e.clientX-startX,dy=e.clientY-startY;if(Math.hypot(dx,dy)>6)moved=true;if(moved){let x=startLeft+dx,y=startTop+dy;x=Math.max(6,Math.min(window.innerWidth-floatBtn.offsetWidth-6,x));y=Math.max(6,Math.min(window.innerHeight-floatBtn.offsetHeight-6,y));floatBtn.style.left=x+'px';floatBtn.style.top=y+'px';floatBtn.style.right='auto';floatBtn.style.bottom='auto';}});
+window.addEventListener('pointerup',e=>{if(!isPointerDown)return;isPointerDown=false;floatBtn.releasePointerCapture?.(e.pointerId);if(!moved) overlay.style.display='flex';});
+overlay.addEventListener('click',e=>{if(e.target===overlay) overlay.style.display='none';});
 
-/* server toggle */
-function setToggle(on){ toggleWrap.classList.toggle('on', on); serverOn = on; serverStateText.textContent = serverOn ? 'Connected' : 'Disconnected'; serverStateText.className = 'server-state ' + (serverOn ? 'on' : 'off'); }
-// attach click to toggle
-toggleWrap.addEventListener('click', ()=>{ setToggle(!serverOn); toastMsg(serverOn ? 'Server Connected' : 'Server Disconnected'); if(serverOn && currentValue===null) chooseInitialValue(); });
+/* Server toggle */
+function setServer(on){serverOn=on;toggleWrap.classList.toggle('on',on);serverStateText.textContent=on?'Connected':'Disconnected';serverStateText.className='server-state '+(on?'on':'off');if(on){currentValue=pickValue();nextValue=pickValue();showValue();scheduleNextRound();startUiTimer();resultText.style.display='flex';}else{if(roundTimeout) clearTimeout(roundTimeout);stopUiTimer();resultText.style.display='none';countdownFull.style.display='none';}}
+toggleWrap.addEventListener('click',()=>{setServer(!serverOn);toast(serverOn?'Server Connected':'Server Disconnected');});
 
-/* modal */
-function openModal(){ keyInput.value=''; successMsg.style.display='none'; modalBackdrop.style.display='flex'; }
-enterKeyBtn.addEventListener('click', openModal); modalClose.addEventListener('click', ()=> modalBackdrop.style.display='none'); buyBtn.addEventListener('click', ()=> window.open('https://telegram.me/ZebDex','_blank'));
-verifyKeyBtn.addEventListener('click', ()=>{ const key=keyInput.value.trim(); if(key==='duggia800'){ successMsg.style.display='block'; successMsg.style.background='#e6fff3'; successMsg.style.color='#0b6b45'; successMsg.textContent='Welcome Premium User'; toastMsg('Activated'); setTimeout(()=>{ modalBackdrop.style.display='none'; redirectBackdrop.style.display='flex'; const redirectUrl='https://apkkingbroo.github.io/paid/panel.html'; let autoHandle=setTimeout(()=>{ window.location.href=redirectUrl; },2000); continueRedirect.onclick=()=>{ clearTimeout(autoHandle); window.location.href=redirectUrl; }; cancelRedirect.onclick=()=>{ clearTimeout(autoHandle); redirectBackdrop.style.display='none'; }; },500); } else { successMsg.style.display='block'; successMsg.style.background='#ffe6e6'; successMsg.style.color='#b00020'; successMsg.textContent='❌ Invalid Key'; toastMsg('Invalid Key'); } });
+/* Mode switch */
+modeSwitchBtn.addEventListener('click',()=>{if(!cooldown){gameMode=gameMode==='digit'?'bigsmall':'digit';currentValue=pickValue();nextValue=pickValue();showValue();toast('Mode switched');}});
+modeSwitchBtn.textContent='Switch to Big/Small';
 
-/* mode switch (digit <-> bigsmall) */
-modeSwitchBtn.addEventListener('click', ()=>{
-  gameMode = (gameMode === 'digit') ? 'bigsmall' : 'digit';
-  toastMsg('Mode → ' + (gameMode === 'digit' ? 'Digit' : 'Big/Small'));
-  // when switching mode, pick new value immediately (so user sees correct type)
-  chooseNewValue(true);
-});
+/* UI timer */
+function startUiTimer(){if(uiTimer) clearInterval(uiTimer);uiTimer=setInterval(()=>{const now=new Date();const s=now.getUTCSeconds();const remain=60-s;periodNumberEl.textContent=`${now.getUTCFullYear()}${String(now.getUTCMonth()+1).padStart(2,'0')}${String(now.getUTCDate()).padStart(2,'0')}1000${10001+now.getUTCHours()*60+now.getUTCMinutes()}`;timerText.textContent=`00:${String(remain).padStart(2,'0')}`;if(!serverOn)return;if(remain<=PREDICT_SECONDS&&remain>=1){countdownFull.style.display='block';countdownNum.textContent=String(remain);resultText.classList.add('anim-cooldown');resultText.classList.remove('anim-pulse');cooldown=true;}else{countdownFull.style.display='none';resultText.classList.remove('anim-cooldown');resultText.classList.add('anim-pulse');if(cooldown){currentValue=nextValue;nextValue=pickValue();showValue();}cooldown=false;}},250);}
+function stopUiTimer(){if(uiTimer){clearInterval(uiTimer);uiTimer=null;}}
 
-/* choose new value */
-function chooseNewValue(forceSameChance=false){
-  // forceSameChance = true when switching modes -> prefer fresh value (set chance to 0)
-  const repeatChance = forceSameChance ? 0 : 0.15; // 15% chance to repeat previous
-  if(lastValue !== null && Math.random() < repeatChance){ currentValue = lastValue; }
-  else {
-    if(gameMode === 'digit') currentValue = String(Math.floor(Math.random()*10));
-    else currentValue = (Math.random() < 0.5) ? 'BIG' : 'SMALL';
-  }
-  lastValue = currentValue;
-  // immediately update display
-  resultText.className = 'result-box digit';
-  resultText.style.display = 'flex';
-  resultText.textContent = currentValue;
-}
-function chooseInitialValue(){ if(gameMode === 'digit') currentValue = String(Math.floor(Math.random()*10)); else currentValue = (Math.random()<0.5)?'BIG':'SMALL'; lastValue = currentValue; resultText.style.display='flex'; resultText.textContent = currentValue; }
+/* Next round */
+function scheduleNextRound(){if(roundTimeout) clearTimeout(roundTimeout);const now=new Date();const msToNext=(60-now.getUTCSeconds())*1000-now.getUTCMilliseconds();roundTimeout=setTimeout(()=>{if(!cooldown){currentValue=nextValue;nextValue=pickValue();showValue();}scheduleNextRound();},msToNext>0?msToNext:msToNext+60000);}
 
-/* main clock & cooldown logic */
-function formatPeriod(now){ const pad=n=>String(n).padStart(2,'0'); const year=now.getUTCFullYear(); const month=pad(now.getUTCMonth()+1); const day=pad(now.getUTCDate()); const h=now.getUTCHours(); const m=now.getUTCMinutes(); return `${year}${month}${day}1000${10001+h*60+m}`; }
-
-// robust tick using requestAnimationFrame to avoid missing exact second
-function tickLoop(){
-  const now = new Date();
-  const s = now.getUTCSeconds();
-  const remain = 60 - s;
-  periodNumberEl.textContent = formatPeriod(now);
-  timerText.textContent = `00:${String(remain).padStart(2,'0')}`;
-
-  // when server is off, hide result
-  if(!serverOn){ resultText.style.display='none'; countdownFull.style.display='none'; requestAnimationFrame(tickLoop); return; }
-
-  // on the exact start of a new minute (UTC second 0), choose a new value
-  if(prevSecond === null) prevSecond = s;
-  if(s !== prevSecond){
-    // crossing second boundary
-    if(s === 0){
-      // new cooldown started — choose fresh value for the new round
-      chooseNewValue(false);
-    }
-    prevSecond = s;
-  }
-
-  // Ensure we always have a value to show
-  if(currentValue === null) chooseInitialValue();
-
-  // Display logic: keep same value for whole cooldown (the minute). During last 5s show countdown overlay and keep value visible (but marked predicting)
-  if(remain <= 5 && remain >= 1){
-    countdownFull.style.display = 'block';
-    countdownNum.textContent = String(remain);
-    // keep showing value but add predicting style
-    resultText.style.display = 'flex';
-    resultText.className = 'result-box predicting';
-    resultText.textContent = currentValue;
-  } else {
-    countdownFull.style.display = 'none';
-    resultText.style.display = 'flex';
-    resultText.className = 'result-box digit';
-    resultText.textContent = currentValue;
-  }
-
-  requestAnimationFrame(tickLoop);
-}
-
-// start the loop
-requestAnimationFrame(tickLoop);
-
-/* winners & online simulations (clean format) */
-function genUID7(){ return String(Math.floor(Math.random()*9000000) + 1000000); }
-function genPrice(){ return Math.floor(Math.random()*14500) + 500; }
-let lastWinnerTime = 0, lastUsersTime = 0;
-function loopWinner(t){ if(serverOn && (!lastWinnerTime || t - lastWinnerTime > 2300)){ lastWinnerTime = t; winnerText.textContent = `User ${genUID7()} Win ₹${genPrice().toLocaleString('en-IN')}`; } requestAnimationFrame(loopWinner); }
-function loopUsers(t){ if(serverOn && (!lastUsersTime || t - lastUsersTime > 1700)){ lastUsersTime = t; onlineUsers.textContent = Math.floor(Math.random()*900 + 100); } requestAnimationFrame(loopUsers); }
-requestAnimationFrame(loopWinner); requestAnimationFrame(loopUsers);
-
-/* start connected for demo (you can toggle) */
-setToggle(true);
-
-</script></body>
+/* Start server connected */
+setServer(true);
+</script>
+</body>
 </html>
